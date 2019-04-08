@@ -12,19 +12,31 @@ int r_tick = 0;
 int l_tick = 0;
 
 void tickR(){
-  r_tick++;
+  r_tick++; //counts rising edges on right side
 }
 void tickL(){
-  l_tick++;
+  l_tick++; //counts rising edges on left side
 }
 
 float getDist(int tickDir){
-  return cir*float(gearRatio*2)/float(tickDir);
+  /*
+   * Distance is arc length,
+   * 2* GearRatio is amount of rising edges in 1 rotation
+   * ticks are the amount of actual rising edges go by
+   * ratio of rising edges to in 1 rotation, times the distance that 1 rotation
+   * moves
+   */
+  return cir*float(tickDir)/float(gearRatio*2);
 }
 
 void right(double angle){
+  /*
+   * circumfrence times angle percentage is arc length
+   * if it hasnt moved the proper arc length, keep going
+   * (this applies to left)
+   */
   float dist = getDist(l_tick);
-  while(dist <= cir/((angle/float(2*PI)))){
+  while(dist <= cir*((angle/float(2*PI)))){
     analogWrite(drivePinL, 255);
   }
   l_tick = 0;
@@ -41,6 +53,9 @@ void left(double angle){
   
 }
 
+/*
+ * this us unneed but may help with robot
+ */
 void straight(double driveDist){
   float dist = getDist(l_tick);
   while(dist <= driveDist){
